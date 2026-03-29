@@ -2,6 +2,7 @@ FROM madeofpendletonwool/pinepods:latest
 ENV PINEPODS_PORT=8080
 EXPOSE 8080
 WORKDIR /pinepods
-# O Choreo precisa de permissão de escrita em tempo de execução
+# Sem o comentário no meio pra não dar erro de parse
 RUN chmod -R 777 /pinepods
-CMD ["pinepods"]
+# Forçar o binário a rodar
+ENTRYPOINT ["pinepods"]
