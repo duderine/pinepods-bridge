@@ -1,39 +1,21 @@
-FROM rust:1.75-slim-bookworm AS builder
+FROM madeofpendletonwool/pinepods:latest
 
-RUN apt-get update && apt-get install -y \
-    pkg-config \
-    libssl-dev \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+USER root
 
-WORKDIR /app
-RUN git clone https://github.com/madeofpendletonwool/pinepods.git .
+RUN sed -i 's/listen 80;/listen 8080;/g' /etc/nginx/nginx.conf && \
+    mkdir -p /var/lib/nginx /var/log/nginx /tmp/pinepods /opt/pinepods && \
+    chmod -R 777 /var/lib/nginx /var/log/nginx /var/www/html /tmp /opt/pinepods /etc/nginx
 
-RUN cargo build --release
+RUN chmod +x /startup.sh /usr/local/bin/pinepods-api /usr/local/bin/gpodder-api /usr/local/bin/pinepods-db-setup
 
-FROM debian:bookworm-slim
+RUN useradd -m -u 10014 choreouser && \
+    chown -R 10014:0 /var/www/html /var/log/nginx /var/lib/nginx /tmp /opt/pinepods
 
 ENV PINEPODS_PORT=8080
-ENV DATA_DIR=/tmp/data
+ENV PORT=8080
 ENV HOME=/tmp
-EXPOSE 8080
-
-RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    libssl3 \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN mkdir -p /tmp/data /tmp/cache && \
-    chmod -R 777 /tmp && \
-    useradd -m -u 10014 choreouser
-
-COPY --from=builder /app/target/release/pinepods /usr/local/bin/pinepods
-RUN chmod +x /usr/local/bin/pinepods
+ENV APP_ROOT=/pinepods
 
 USER 10014
-WORKDIR /tmp
 
-ENV PINEPODS_STORAGE_DIR=/tmp/data
-ENV PINEPODS_CACHE_DIR=/tmp/cache
-
-ENTRYPOINT ["/usr/local/bin/pinepods"]
+ENTRYPOINT ["bash", "/startup.sh"]
