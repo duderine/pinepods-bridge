@@ -16,9 +16,9 @@ RUN apt-get update && apt-get install -y \
 
 RUN mkdir -p /tmp/data /tmp/cache && \
     chmod -R 777 /tmp && \
-    useradd -u 10014 choreouser
+    useradd -m -u 10014 choreouser
 
-COPY --from=source /usr/local/bin/pinepods /usr/local/bin/pinepods
+COPY --from=source /usr/bin/pinepods /usr/local/bin/pinepods
 
 USER 10014
 WORKDIR /tmp
