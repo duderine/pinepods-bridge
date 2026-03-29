@@ -20,12 +20,12 @@ RUN mkdir -p /tmp/data /tmp/cache && \
 
 COPY --from=source /pinepods /usr/local/bin/pinepods
 
+RUN chmod +x /usr/local/bin/pinepods
+
 USER 10014
 WORKDIR /tmp
 
 ENV PINEPODS_STORAGE_DIR=/tmp/data
 ENV PINEPODS_CACHE_DIR=/tmp/cache
-
-RUN chmod +x /usr/local/bin/pinepods
 
 ENTRYPOINT ["/usr/local/bin/pinepods"]
