@@ -18,7 +18,7 @@ RUN mkdir -p /tmp/data /tmp/cache && \
     chmod -R 777 /tmp && \
     useradd -m -u 10014 choreouser
 
-COPY --from=source /usr/local/bin/pinepods /usr/local/bin/pinepods
+COPY --from=source /pinepods/. /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/pinepods
 
