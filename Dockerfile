@@ -2,6 +2,9 @@ FROM madeofpendletonwool/pinepods:latest
 
 USER root
 
+RUN apk update && apk upgrade && \
+    apk add --no-cache libcrypto3 libssl3 openssl libexpat
+
 RUN sed -i 's/listen 80;/listen 8080;/g' /etc/nginx/nginx.conf && \
     mkdir -p /var/lib/nginx /var/log/nginx /tmp/pinepods /opt/pinepods && \
     chmod -R 777 /var/lib/nginx /var/log/nginx /var/www/html /tmp /opt/pinepods /etc/nginx
