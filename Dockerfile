@@ -8,8 +8,9 @@ RUN sed -i 's/listen 80;/listen 8080;/g' /etc/nginx/nginx.conf && \
 
 RUN chmod +x /startup.sh /usr/local/bin/pinepods-api /usr/local/bin/gpodder-api /usr/local/bin/pinepods-db-setup
 
-RUN useradd -m -u 10014 choreouser && \
-    chown -R 10014:0 /var/www/html /var/log/nginx /var/lib/nginx /tmp /opt/pinepods
+RUN addgroup -g 10014 choreogroup && \
+    adduser -D -u 10014 -G choreogroup choreouser && \
+    chown -R 10014:10014 /var/www/html /var/log/nginx /var/lib/nginx /tmp /opt/pinepods
 
 ENV PINEPODS_PORT=8080
 ENV PORT=8080
