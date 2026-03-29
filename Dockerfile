@@ -1,4 +1,15 @@
-FROM madeofpendletonwool/pinepods:latest AS source
+FROM rust:1.75-slim-bookworm AS builder
+
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+RUN git clone https://github.com/madeofpendletonwool/pinepods.git .
+
+RUN cargo build --release
 
 FROM debian:bookworm-slim
 
@@ -6,8 +17,6 @@ ENV PINEPODS_PORT=8080
 ENV DATA_DIR=/tmp/data
 ENV HOME=/tmp
 EXPOSE 8080
-
-USER root
 
 RUN apt-get update && apt-get install -y \
     ca-certificates \
@@ -18,8 +27,7 @@ RUN mkdir -p /tmp/data /tmp/cache && \
     chmod -R 777 /tmp && \
     useradd -m -u 10014 choreouser
 
-COPY --from=source /pinepods/. /usr/local/bin/
-
+COPY --from=builder /app/target/release/pinepods /usr/local/bin/pinepods
 RUN chmod +x /usr/local/bin/pinepods
 
 USER 10014
